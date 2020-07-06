@@ -1,10 +1,17 @@
 CC=gcc
 CFLAGS=-I.
 
-install:gapper
+INSTALL_PATH=/usr/local/bin/
+REPO_LIST_PATH=/usr/share/gapper/
 
 gapper:
 	$(CC) gapper.c -o gapper
 
 clean:
-	rm -rf gapper	
+	rm -rf gapper
+	rm -rf gapperConfig.csv
+
+install:gapper
+uninstall:clean
+refresh:clean gapper
+
