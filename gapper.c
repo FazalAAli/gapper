@@ -21,8 +21,8 @@ int main(int argc, char **argv)
 
     printf("Performed commands sucessfully \n");
 
-    printf("delete = %i, update = %i, branch = %s, path = %s\n",
-           DELETE_PATH, UPDATE_NOW, BRANCH, PATH);
+    printf("delete = %i, update = %i,path = %s\n",
+           DELETE_PATH, UPDATE_NOW, PATH);
 }
 
 void print_help(void)
@@ -35,7 +35,7 @@ int set_args(int argc, char **argv)
     int c;
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "hub:p:d:")) != -1)
+    while ((c = getopt(argc, argv, "hup:d:")) != -1)
     {
         switch (c)
         {
@@ -45,9 +45,6 @@ int set_args(int argc, char **argv)
         case 'u':
             UPDATE_NOW = 1;
             break;
-        case 'b':
-            BRANCH = optarg;
-            break;
         case 'p':
             PATH = optarg;
             break;
@@ -56,7 +53,7 @@ int set_args(int argc, char **argv)
             DELETE_PATH = 1;
             break;
         case '?':
-            if (optopt == 'p' || optopt == 'b' || optopt == 'd')
+            if (optopt == 'p' || optopt == 'd')
                 fprintf(stderr, "Option -%c requires an argument.\n", optopt);
             else if (isprint(optopt))
                 fprintf(stderr, "Unknown option `-%c'.\n", optopt);
@@ -76,13 +73,6 @@ int set_args(int argc, char **argv)
 
 int check_args()
 {
-    //Check if user isn't providing branch name without giving path.
-    if (BRANCH != NULL && PATH == NULL)
-    {
-        printf("-b can only be used while adding a path using -p\n");
-        return 1;
-    }
-
     //Check if atleast one valid command is given
     if (DELETE_PATH == 0 && UPDATE_NOW == 0 && PATH == NULL)
     {
@@ -149,7 +139,7 @@ int perform_actions()
 void add_path()
 {
     //TODO: CREATE CSV ENTRY.
-    
+
     //TODO: Check if CSV entry already exists. 
 
     //Check if config file exists.
