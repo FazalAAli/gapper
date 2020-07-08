@@ -3,6 +3,7 @@
 
 int main(int argc, char **argv)
 {
+    PATH = malloc(LOCAL_PATH_MAX);
     //Set variables from arguements
     if (set_args(argc, argv) == 1)
         return 1;
@@ -91,6 +92,8 @@ int check_args()
         DIR *dir = opendir(tempPath);
         if (dir)
         {
+            char buf[4096];
+            PATH = realpath(PATH, buf);
             /* Directory exists. */
             closedir(dir);
         }
@@ -118,7 +121,8 @@ int perform_actions()
     //User wants to add path
     if (DELETE_PATH == 0 && PATH != NULL)
     {
-        add_path();
+        if (add_path() == 1)
+            return 1;
     }
 
     //User wants to delete path
@@ -136,23 +140,26 @@ int perform_actions()
     return 0;
 }
 
-void add_path()
+int add_path()
 {
-    //TODO: CREATE CSV ENTRY.
-
-    //TODO: Check if CSV entry already exists. 
+    //Create csv entry
+    char *csvEntry = create_config_entry();
 
     //Check if config file exists.
     if (access(CONFIG_FILE, F_OK) != -1)
     {
-        //File exists - no need to create just add.
-    }
-    else
-    {
+        //File exists - no need to create just check and add.
+
+        //Check if CSV entry already exists.
+        if (check_if_exists(csvEntry) == 1)
+        {
+            printf("Path already exists. Use -u to update all repos now.\n");
+            return 1;
+        }
+
         //File does not exist - create it now.
 
-        FILE *file;
-        file = fopen(CONFIG_FILE, "w");
+        FILE *file = fopen(CONFIG_FILE, "a");
 
         if (file == NULL)
         {
@@ -161,7 +168,66 @@ void add_path()
             exit(EXIT_FAILURE);
         }
 
-        fputs(PATH, file);
+        fputs(csvEntry, file);
         fclose(file);
     }
+    else
+    {
+        //File does not exist - create it now.
+
+        FILE *file = fopen(CONFIG_FILE, "w");
+
+        if (file == NULL)
+        {
+            /* File not created hence exit */
+            printf("Unable to create config file.\n");
+            exit(EXIT_FAILURE);
+        }
+
+        fputs(csvEntry, file);
+        fclose(file);
+    }
+    free(csvEntry);
+}
+
+char *create_config_entry()
+{
+    char *temp_entry = malloc(LOCAL_PATH_MAX);
+    strcpy(temp_entry, PATH);
+    strcat(temp_entry, SEPERATOR);
+    return temp_entry;
+}
+
+int check_if_exists(char *csvEntry)
+{
+    FILE *file = fopen(CONFIG_FILE, "r");
+    char line[LOCAL_PATH_MAX];
+    while (fgets(line, LOCAL_PATH_MAX, file))
+    {
+        char *tmp = strdup(line);
+        char *single = getfield(tmp, 1);
+        strcat(single, SEPERATOR);
+        
+        if(strcmp(csvEntry, single) == 0){
+            free(tmp);
+            return 1;
+        }
+        // NOTE strtok clobbers tmp
+        free(tmp);
+    }
+
+    return 0;
+}
+
+char *getfield(char *line, int num)
+{
+    char *tok;
+    for (tok = strtok(line, ":");
+         tok && *tok;
+         tok = strtok(NULL, ":\n"))
+    {
+        if (!--num)
+            return tok;
+    }
+    return NULL;
 }
