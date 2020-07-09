@@ -1,0 +1,18 @@
+CC=gcc
+CFLAGS=-I.
+
+INSTALL_PATH=/usr/local/bin/
+REPO_LIST_PATH=/usr/share/gapper/
+
+gapper:
+	$(CC) gapper.c -o gapper
+
+clean:
+	rm -rf gapper
+	rm -rf gapperConfig.csv
+	rm -rf gitPullTest/
+
+install:gapper
+uninstall:clean
+refresh:clean gapper
+

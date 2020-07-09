@@ -6,12 +6,15 @@ REPO_LIST_PATH=/usr/share/gapper/
 
 gapper:
 	$(CC) gapper.c -o gapper
+	mv gapper $(INSTALL_PATH)
+	mkdir $(REPO_LIST_PATH)
+	touch $(REPO_LIST_PATH).gapperList
 
 clean:
-	rm -rf gapper
-	rm -rf gapperConfig.csv
+	rm -rf $(REPO_LIST_PATH)
+	rm -rf $(REPO_LIST_PATH).gapperList
+	rm -rf $(INSTALL_PATH)gapper
 
 install:gapper
 uninstall:clean
-refresh:clean gapper
 

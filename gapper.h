@@ -11,9 +11,12 @@
 #define LOCAL_PATH_MAX PATH_MAX + sizeof(SEPERATOR)
 int DELETE_PATH = 0;
 int UPDATE_NOW = 0;
+int PATH_GIVEN = 0;
+char path_to_config[PATH_MAX];
 char *SEPERATOR = ":\n";
-char *PATH = NULL;
-char *CONFIG_FILE = "gapperConfig.csv"; //"~/.gapperConfig"; //change to "gapperConfig.csv" when developing so the config is in the same folder as execution.
+char *PATH;
+char *CONFIG_FILE = "/.gapperConfig"; //change to "gapperConfig.csv" when developing so the config is in the same folder as compiling/execution.
+char *COMMAND_TO_RUN = "git pull";    //change to "mkdir gitPullTest" when developing so there's no unnecessary git pulls
 char *HELP_MESSAGE =
     "-h : show these instructions\n"
     "-u : update all git repositories now\n"
@@ -29,3 +32,5 @@ int check_if_exists(char *csvEntry);
 char *create_config_entry();
 int check_if_exists(char *csvEntry);
 char *getfield(char *line, int num);
+int update_all_now();
+void delete_path(char *csvEntry);
