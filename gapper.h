@@ -6,9 +6,10 @@
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
-#include <limits.h>
 
+#define PATH_MAX 4096
 #define LOCAL_PATH_MAX PATH_MAX + sizeof(SEPERATOR)
+
 int DELETE_PATH = 0;
 int UPDATE_NOW = 0;
 int PATH_GIVEN = 0;
