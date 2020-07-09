@@ -9,7 +9,6 @@ gapper:
 
 clean:
 	rm -rf gapper
-	rm -rf gapperConfig.csv
 	rm -rf gitPullTest/
 
 install:gapper
