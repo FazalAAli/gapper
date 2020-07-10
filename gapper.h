@@ -35,3 +35,4 @@ int check_if_exists(char *csvEntry);
 char *getfield(char *line, int num);
 int update_all_now();
 void delete_path(char *csvEntry);
+void show_list();

@@ -34,7 +34,7 @@ int set_args(int argc, char **argv)
     int c;
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "hup:d:")) != -1)
+    while ((c = getopt(argc, argv, "hup:d:s")) != -1)
     {
         switch (c)
         {
@@ -52,6 +52,9 @@ int set_args(int argc, char **argv)
             PATH = optarg;
             DELETE_PATH = 1;
             break;
+        case 's':
+            show_list();
+            return 1;
         case '?':
             if (optopt == 'p' || optopt == 'd')
                 fprintf(stderr, "Option -%c requires an argument.\n", optopt);
@@ -283,4 +286,19 @@ void delete_path(char *pathToDelete)
 
     remove(path_to_config);
     rename(path_to_temp, path_to_config);
+}
+
+void show_list(){
+    FILE *configFile = fopen(path_to_config, "r");
+    
+    if(configFile == NULL){
+        printf("Could not find or open config file. \n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Current repos in list are: \n");
+    char line[LOCAL_PATH_MAX];
+    while(fgets(line, LOCAL_PATH_MAX, configFile)){
+        printf("%s", line);
+    }
 }
