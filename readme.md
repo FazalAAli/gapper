@@ -23,6 +23,9 @@ Use `gapper -u` to update all repositories in your list. This can be used in con
 #### Show all command
 Use `gapper -s` to show all repostories in your list. 
 
+#### Verbose tag
+Use `-v` whenever you want to see output from the gapper program and from git commands. Otherwise, this will be supressed.
+
 #### Help command
 Use `gapper -h` to see a simplified list of all options
 
