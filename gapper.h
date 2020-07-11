@@ -13,7 +13,8 @@
 int DELETE_PATH = 0;
 int UPDATE_NOW = 0;
 int PATH_GIVEN = 0;
-char path_to_config[PATH_MAX];
+int VERBOSE = 0;
+char PATH_TO_CONFIG[PATH_MAX];
 char *SEPERATOR = ":\n";
 char *PATH;
 char *CONFIG_FILE = "/.gapperConfig"; //change to "gapperConfig.csv" when developing so the config is in the same folder as compiling/execution.
@@ -22,7 +23,9 @@ char *HELP_MESSAGE =
     "-h : show these instructions\n"
     "-u : update all git repositories now\n"
     "-p : add path to git repositories list\n"
-    "-d : remove path from  git repositories list\n";
+    "-d : remove path from  git repositories list\n"
+    "-s : show all paths currently in the repositories list\n"
+    "-v : turn on verbose output - print as commands are executed.\n";
 
 void print_help(void);
 int set_args(int argc, char **argv);
