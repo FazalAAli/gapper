@@ -12,4 +12,5 @@ clean:
 
 install:gapper
 uninstall:clean
+update:uninstall install
 
