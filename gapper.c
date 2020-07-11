@@ -2,26 +2,29 @@
 
 int main(int argc, char **argv)
 {
+    //Set variables
     PATH = malloc(LOCAL_PATH_MAX);
-    strcat(strcpy(path_to_config, getenv("HOME")), CONFIG_FILE);
+    strcat(strcpy(PATH_TO_CONFIG, getenv("HOME")), CONFIG_FILE);
+
     //Set variables from arguements
     if (set_args(argc, argv) == 1)
         return 1;
 
-    printf("Set commands sucessfully \n");
+    if (VERBOSE == 1)
+        printf("Set commands sucessfully \n");
 
     //Check arguements
     if (check_args() == 1)
         return 1;
-
-    printf("Checked commands sucessfully \n");
+    if (VERBOSE == 1)
+        printf("Checked commands sucessfully \n");
 
     //Perform actions
     if (perform_actions() == 1)
         return 1;
 
-    printf("Performed commands sucessfully \n");
-    
+    if (VERBOSE == 1)
+        printf("Performed commands sucessfully \n");
 }
 
 void print_help(void)
@@ -34,10 +37,13 @@ int set_args(int argc, char **argv)
     int c;
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "hup:d:s")) != -1)
+    while ((c = getopt(argc, argv, "hup:d:sv")) != -1)
     {
         switch (c)
         {
+        case 'v':
+            VERBOSE = 1;
+            break;
         case 'h':
             print_help();
             return 1;
@@ -94,8 +100,6 @@ int check_args()
         DIR *dir = opendir(tempPath);
         if (dir)
         {
-            char buf[4096];
-            PATH = realpath(PATH, buf);
             /* Directory exists. */
             closedir(dir);
         }
@@ -130,8 +134,6 @@ int perform_actions()
     //User wants to delete path
     if (DELETE_PATH == 1)
     {
-        char buf[4096];
-        PATH = realpath(PATH, buf);
         char *csventry = create_config_entry();
         if (check_if_exists(csventry) == 0)
         {
@@ -159,9 +161,11 @@ int add_path()
     char *csvEntry = create_config_entry();
 
     //Check if config file exists.
-    if (access(path_to_config, F_OK) != -1)
+    if (access(PATH_TO_CONFIG, F_OK) != -1)
     {
-        printf("Found config file\n");
+        if (VERBOSE == 1)
+            printf("Found config file\n");
+        
         //File exists - no need to create just check and add.
 
         //Check if CSV entry already exists.
@@ -171,15 +175,15 @@ int add_path()
             return 1;
         }
 
-        FILE *file = fopen(path_to_config, "a");
+        FILE *file = fopen(PATH_TO_CONFIG, "a");
         fputs(csvEntry, file);
         fclose(file);
     }
     else
     {
         //File does not exist - create it now.
-        printf("create config file in %s\n", path_to_config);
-        FILE *file = fopen(path_to_config, "w");
+        printf("create config file in %s\n", PATH_TO_CONFIG);
+        FILE *file = fopen(PATH_TO_CONFIG, "w");
         if (file == NULL)
         {
             /* File not created hence exit */
@@ -195,15 +199,19 @@ int add_path()
 
 char *create_config_entry()
 {
+    char realPathConversionHolder[PATH_MAX];
+    realpath(PATH, realPathConversionHolder);
+
     char *temp_entry = malloc(LOCAL_PATH_MAX);
-    strcpy(temp_entry, PATH);
+    strcpy(temp_entry, realPathConversionHolder);
     strcat(temp_entry, SEPERATOR);
+
     return temp_entry;
 }
 
 int check_if_exists(char *csvEntry)
 {
-    FILE *file = fopen(path_to_config, "r");
+    FILE *file = fopen(PATH_TO_CONFIG, "r");
     char line[LOCAL_PATH_MAX];
     while (fgets(line, LOCAL_PATH_MAX, file))
     {
@@ -238,7 +246,13 @@ char *getfield(char *line, int num)
 
 int update_all_now()
 {
-    FILE *file = fopen(path_to_config, "r");
+    char tempCommand[PATH_MAX];
+    strcat(tempCommand, COMMAND_TO_RUN);
+
+    if (VERBOSE == 0)
+        strcat(tempCommand, " -q");
+
+    FILE *file = fopen(PATH_TO_CONFIG, "r");
 
     if (file == NULL)
     {
@@ -251,9 +265,10 @@ int update_all_now()
     {
         char *tmp = strdup(line);
         char *single = getfield(tmp, 1);
-        printf("Updating %s\n", single);
+        if(VERBOSE == 1)
+            printf("Updating %s\n", single);
         chdir(single);
-        system(COMMAND_TO_RUN);
+        system(tempCommand);
         // NOTE strtok clobbers tmp
         free(tmp);
     }
@@ -266,7 +281,7 @@ void delete_path(char *pathToDelete)
     char *path_to_temp = strcat(getenv("HOME"), "/.temp");
     //Open temporary file to write to.
     FILE *tempfile = fopen(path_to_temp, "a");
-    FILE *currentConfig = fopen(path_to_config, "r");
+    FILE *currentConfig = fopen(PATH_TO_CONFIG, "r");
 
     if (tempfile == NULL || currentConfig == NULL)
     {
@@ -283,22 +298,24 @@ void delete_path(char *pathToDelete)
         }
     }
 
-
-    remove(path_to_config);
-    rename(path_to_temp, path_to_config);
+    remove(PATH_TO_CONFIG);
+    rename(path_to_temp, PATH_TO_CONFIG);
 }
 
-void show_list(){
-    FILE *configFile = fopen(path_to_config, "r");
-    
-    if(configFile == NULL){
+void show_list()
+{
+    FILE *configFile = fopen(PATH_TO_CONFIG, "r");
+
+    if (configFile == NULL)
+    {
         printf("Could not find or open config file. \n");
         exit(EXIT_FAILURE);
     }
 
     printf("Current repos in list are: \n");
     char line[LOCAL_PATH_MAX];
-    while(fgets(line, LOCAL_PATH_MAX, configFile)){
+    while (fgets(line, LOCAL_PATH_MAX, configFile))
+    {
         printf("%s", line);
     }
 }
