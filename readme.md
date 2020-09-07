@@ -3,6 +3,11 @@
 
 An easy way to manage your current git repos and automatically keeping them upto date.
 
+#### Note about further updates
+I have stopped actively developing this application as it staisfies my needs and the goal I set out for when I created this project.
+If there are any glaring security issues or quality of life features, please create a github issue and let me know.
+Better yet, in the spirit of why this application was created, give your idea a try and then create a pull request!
+
 ### Installation 
 1. Clone this library and navigate into it using the terminal
 2. Use ` sudo make install ` to install [^1]
